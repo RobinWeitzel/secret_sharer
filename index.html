@@ -3,10 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Secret Sharer</title>
+    <title>Decrypt Secrets - Secret Sharer</title>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <div id="app">
+      <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <header class="bg-white shadow-sm">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+                <h1 class="text-2xl font-bold text-gray-900">Secret Sharer</h1>
+              </div>
+              <nav class="flex space-x-4">
+                <a href="/secret_sharer/" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                  Decrypt
+                </a>
+                <a href="/secret_sharer/encrypt.html" class="text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                  Encrypt
+                </a>
+              </nav>
+            </div>
+          </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div class="max-w-3xl mx-auto">
+            <div class="bg-white rounded-lg shadow-md p-8">
+              <h2 class="text-3xl font-bold text-gray-900 mb-4">Decrypt Your Secrets</h2>
+              <p class="text-gray-600 mb-8">
+                Scan both QR codes to reveal your secrets.
+              </p>
+              <!-- Decrypt page content will be added when implementing decrypt functionality -->
+            </div>
+          </div>
+        </main>
+
+        <footer class="mt-auto py-6 text-center text-sm text-gray-600">
+          <p>Secure client-side secret sharing with split QR codes</p>
+        </footer>
+      </div>
+    </div>
+    <script type="module" src="/src/pages/decrypt.ts"></script>
   </body>
 </html>
