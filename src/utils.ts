@@ -27,7 +27,7 @@ export function getQRCodeType(): 'data' | 'key' | null {
  * Build URL with query parameters for QR code
  */
 export function buildQRCodeURL(type: 'data' | 'key', payload: string): string {
-  const baseURL = window.location.origin + window.location.pathname.replace(/\/encrypt$/, '');
+  const baseURL = 'https://robinweitzel.de/secret_sharer';
   const params = new URLSearchParams();
   params.set(type, payload);
   return `${baseURL}?${params.toString()}`;

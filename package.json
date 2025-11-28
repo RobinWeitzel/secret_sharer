@@ -10,10 +10,14 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.17",
+    "@types/qrcode": "^1.5.6",
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17",
     "typescript": "^5.9.3",
     "vite": "^7.2.4"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
   }
 }
