@@ -76,85 +76,43 @@
               </div>
 
               <div id="qrCodesContainer" class="hidden mt-8">
-                <div class="no-print">
-                  <h3 class="text-xl font-bold text-gray-900 mb-4">Your QR Codes</h3>
-                  <p class="text-gray-600 mb-6">
-                    Click the button below to print both pages. Store each page in a different secure location.
-                  </p>
-                  <button
-                    id="printBtn"
-                    class="mb-6 w-full bg-green-600 text-white px-6 py-3 rounded-md font-medium hover:bg-green-700 transition-colors"
-                  >
-                    Print Both Pages
-                  </button>
-                  <div class="grid md:grid-cols-2 gap-6 mb-6">
-                    <div class="border-2 border-gray-300 rounded-lg p-4">
-                      <h4 class="font-semibold text-gray-700 mb-2 text-center">Preview - Page 1</h4>
-                      <div id="qrCode1Preview" class="bg-gray-100 p-2"></div>
-                    </div>
-                    <div class="border-2 border-gray-300 rounded-lg p-4">
-                      <h4 class="font-semibold text-gray-700 mb-2 text-center">Preview - Page 2</h4>
-                      <div id="qrCode2Preview" class="bg-gray-100 p-2"></div>
-                    </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Your QR Codes</h3>
+                <p class="text-gray-600 mb-6">
+                  Preview the QR codes below, then download the PDF to print both pages. Store each page in a different secure location.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                  <div class="border-2 border-gray-300 rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-700 mb-2 text-center">Page 1 - Encrypted Data</h4>
+                    <div id="qrCode1Preview" class="bg-gray-100 p-2 flex items-center justify-center"></div>
+                  </div>
+                  <div class="border-2 border-gray-300 rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-700 mb-2 text-center">Page 2 - Decryption Key</h4>
+                    <div id="qrCode2Preview" class="bg-gray-100 p-2 flex items-center justify-center"></div>
                   </div>
                 </div>
 
-                <!-- Print Page 1 -->
-                <div class="print-page">
-                  <div class="print-header">
-                    <h1 class="print-title">Secret Recovery - Part 1 of 2</h1>
-                    <p class="print-subtitle">ENCRYPTED DATA</p>
-                  </div>
+                <button
+                  id="downloadBtn"
+                  class="w-full bg-green-600 text-white px-6 py-3 rounded-md font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                  Download PDF (2 Pages)
+                </button>
 
-                  <div class="print-qr-container">
-                    <div id="qrCode1" class="print-qr"></div>
-                  </div>
-
-                  <div class="print-instructions">
-                    <h2 class="print-instructions-title">Instructions:</h2>
-                    <ol class="print-instructions-list">
-                      <li>Open the camera app on your smartphone</li>
-                      <li>Point your camera at the QR code above</li>
-                      <li>Tap the notification that appears to open the website</li>
-                      <li>The website will ask you to scan Part 2</li>
-                      <li>Locate Part 2 (stored in a different location)</li>
-                      <li>Scan the QR code on Part 2</li>
-                      <li>Your secrets will be displayed</li>
-                    </ol>
-
-                    <div class="print-warning">
-                      <p><strong>IMPORTANT:</strong> This page alone cannot reveal your secrets. Both Part 1 and Part 2 are required.</p>
-                      <p><strong>Storage:</strong> Keep this page and Part 2 in separate secure locations (e.g., one at home, one with a trusted family member).</p>
+                <div class="mt-4 bg-blue-50 border border-blue-200 rounded-md p-4">
+                  <div class="flex">
+                    <div class="flex-shrink-0">
+                      <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                      </svg>
                     </div>
-                  </div>
-                </div>
-
-                <!-- Print Page 2 -->
-                <div class="print-page">
-                  <div class="print-header">
-                    <h1 class="print-title">Secret Recovery - Part 2 of 2</h1>
-                    <p class="print-subtitle">DECRYPTION KEY</p>
-                  </div>
-
-                  <div class="print-qr-container">
-                    <div id="qrCode2" class="print-qr"></div>
-                  </div>
-
-                  <div class="print-instructions">
-                    <h2 class="print-instructions-title">Instructions:</h2>
-                    <ol class="print-instructions-list">
-                      <li>First, locate Part 1 (stored in a different location)</li>
-                      <li>Open the camera app on your smartphone</li>
-                      <li>Point your camera at the QR code on Part 1</li>
-                      <li>Tap the notification to open the website</li>
-                      <li>The website will ask you to scan Part 2</li>
-                      <li>Point your camera at the QR code above</li>
-                      <li>Your secrets will be displayed</li>
-                    </ol>
-
-                    <div class="print-warning">
-                      <p><strong>IMPORTANT:</strong> This page alone cannot reveal your secrets. Both Part 1 and Part 2 are required.</p>
-                      <p><strong>Storage:</strong> Keep this page and Part 1 in separate secure locations (e.g., one at home, one with a trusted family member).</p>
+                    <div class="ml-3">
+                      <p class="text-sm text-blue-700">
+                        The PDF contains 2 pages with QR codes and instructions. Print both pages and store them in separate secure locations.
+                      </p>
                     </div>
                   </div>
                 </div>

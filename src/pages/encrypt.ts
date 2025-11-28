@@ -2,6 +2,10 @@ import '../style.css';
 import { compress } from '../compression';
 import { generateKey, exportKey, encrypt } from '../crypto';
 import { generateQRCodes, renderQRCode } from '../qrcode';
+import { generatePDF } from '../pdf';
+
+// Store QR codes for PDF generation
+let currentQRCodes: { dataQR: string; keyQR: string } | null = null;
 
 // Initialize page when DOM is ready
 document.addEventListener('DOMContentLoaded', initEncryptPage);
@@ -14,50 +18,41 @@ function initEncryptPage(): void {
     generateBtn,
     secretsTextarea,
     qrCodesContainer,
-    qrCode1Container,
-    qrCode2Container,
     qrCode1Preview,
     qrCode2Preview,
-    printBtn
+    downloadBtn
   } = elements;
 
   generateBtn.addEventListener('click', () => handleGenerateClick(
     secretsTextarea,
     generateBtn,
     qrCodesContainer,
-    qrCode1Container,
-    qrCode2Container,
     qrCode1Preview,
     qrCode2Preview
   ));
 
-  if (printBtn) {
-    printBtn.addEventListener('click', () => window.print());
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', handleDownloadClick);
   }
 }
 
 function getPageElements() {
   const generateBtn = document.getElementById('generateBtn');
-  const printBtn = document.getElementById('printBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
   const secretsTextarea = document.getElementById('secrets') as HTMLTextAreaElement;
   const qrCodesContainer = document.getElementById('qrCodesContainer');
-  const qrCode1Container = document.getElementById('qrCode1');
-  const qrCode2Container = document.getElementById('qrCode2');
   const qrCode1Preview = document.getElementById('qrCode1Preview');
   const qrCode2Preview = document.getElementById('qrCode2Preview');
 
-  if (!generateBtn || !secretsTextarea || !qrCodesContainer ||
-      !qrCode1Container || !qrCode2Container || !qrCode1Preview || !qrCode2Preview) {
+  if (!generateBtn || !secretsTextarea || !qrCodesContainer || !qrCode1Preview || !qrCode2Preview) {
     return null;
   }
 
   return {
     generateBtn,
-    printBtn,
+    downloadBtn,
     secretsTextarea,
     qrCodesContainer,
-    qrCode1Container,
-    qrCode2Container,
     qrCode1Preview,
     qrCode2Preview
   };
@@ -67,8 +62,6 @@ async function handleGenerateClick(
   secretsTextarea: HTMLTextAreaElement,
   generateBtn: HTMLElement,
   qrCodesContainer: HTMLElement,
-  qrCode1Container: HTMLElement,
-  qrCode2Container: HTMLElement,
   qrCode1Preview: HTMLElement,
   qrCode2Preview: HTMLElement
 ): Promise<void> {
@@ -82,13 +75,7 @@ async function handleGenerateClick(
   setButtonLoading(generateBtn, true);
 
   try {
-    await processAndDisplayQRCodes(
-      secrets,
-      qrCode1Container,
-      qrCode2Container,
-      qrCode1Preview,
-      qrCode2Preview
-    );
+    await processAndDisplayQRCodes(secrets, qrCode1Preview, qrCode2Preview);
     showQRCodesSection(qrCodesContainer);
   } catch (error) {
     handleGenerateError(error);
@@ -97,10 +84,17 @@ async function handleGenerateClick(
   }
 }
 
+function handleDownloadClick(): void {
+  if (!currentQRCodes) {
+    alert('Please generate QR codes first');
+    return;
+  }
+
+  generatePDF(currentQRCodes);
+}
+
 async function processAndDisplayQRCodes(
   secrets: string,
-  qrCode1Container: HTMLElement,
-  qrCode2Container: HTMLElement,
   qrCode1Preview: HTMLElement,
   qrCode2Preview: HTMLElement
 ): Promise<void> {
@@ -110,9 +104,10 @@ async function processAndDisplayQRCodes(
   const encrypted = await encrypt(compressed, key);
   const { dataQR, keyQR } = await generateQRCodes(encrypted, exportedKey);
 
-  // Render to both print containers and preview containers
-  renderQRCode(qrCode1Container, dataQR);
-  renderQRCode(qrCode2Container, keyQR);
+  // Store for PDF generation
+  currentQRCodes = { dataQR, keyQR };
+
+  // Render preview
   renderQRCode(qrCode1Preview, dataQR);
   renderQRCode(qrCode2Preview, keyQR);
 }
