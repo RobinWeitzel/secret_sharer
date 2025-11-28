@@ -15,6 +15,8 @@ The site should have two functions:
 - decrypting secrets (this is reached by scanning the first QR code or you can also click there and be prompted to scan the first code)
 - encrypting secrets (here the two QR codes are generated. The user then has the option to print both QR codes. The pages that are printed should also contain user instructions so that people not very knowledgeable about technology still understand what they need to do).
 
+The site needs to work for both mobile and desktop.
+
 ### Technical details
 The website should use tailwindcss for styling and Typescript for the code.
 It will be hosted on GitHub pages.
@@ -24,3 +26,8 @@ For the encryption a symmetric state-of-the-art encryption method should be used
 
 Consideration should also be given about the max payload size of query parameters.
 A possible solution could be to first compress the secrets before encrypting them (and then decompress them again after decryption).
+
+For coding follow modern best practices:
+- separation of concern and single reposibility
+- keep files and methods small and easy to read
+- keep thing concise and only as complex as neccecary
