@@ -1,11 +1,11 @@
 import '../style.css';
 import { compress } from '../compression';
 import { generateKey, exportKey, encrypt } from '../crypto';
-import { generateQRCodes, renderQRCode } from '../qrcode';
+import { generateQRCodeSet, renderQRCode } from '../qrcode';
 import { generatePDF } from '../pdf';
 
 // Store QR codes for PDF generation
-let currentQRCodes: { dataQR: string; keyQR: string } | null = null;
+let currentQRCodes: { dataQR: string; keyQR: string; dataOnlyQR: string; keyOnlyQR: string } | null = null;
 
 // Initialize page when DOM is ready
 document.addEventListener('DOMContentLoaded', initEncryptPage);
@@ -102,14 +102,14 @@ async function processAndDisplayQRCodes(
   const key = await generateKey();
   const exportedKey = await exportKey(key);
   const encrypted = await encrypt(compressed, key);
-  const { dataQR, keyQR } = await generateQRCodes(encrypted, exportedKey);
+  const qrCodeSet = await generateQRCodeSet(encrypted, exportedKey);
 
   // Store for PDF generation
-  currentQRCodes = { dataQR, keyQR };
+  currentQRCodes = qrCodeSet;
 
-  // Render preview
-  renderQRCode(qrCode1Preview, dataQR);
-  renderQRCode(qrCode2Preview, keyQR);
+  // Render preview (only show the URL versions)
+  renderQRCode(qrCode1Preview, qrCodeSet.dataQR);
+  renderQRCode(qrCode2Preview, qrCodeSet.keyQR);
 }
 
 function setButtonLoading(button: HTMLElement, isLoading: boolean): void {

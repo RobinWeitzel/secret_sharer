@@ -19,7 +19,7 @@ The site needs to work for both mobile and desktop.
 
 ### Technical details
 The website should use tailwindcss for styling and Typescript, HTML and CSS for the code.
-It will be hosted on GitHub pages (under https://robinweitzel.de/secret_sharer).
+It will be hosted on GitHub pages.
 For developing it should be possible to run a local dev server.
 
 For the encryption a symmetric state-of-the-art encryption method should be used.
