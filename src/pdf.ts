@@ -110,4 +110,17 @@ function generatePage(pdf: jsPDF, qrCode: string, pageNum: number): void {
   pdf.setDrawColor(0, 0, 0);
   pdf.setLineWidth(0.5);
   pdf.rect(margin, yPos, pageWidth - 2 * margin, 15);
+
+  yPos += 22;
+  pdf.setFontSize(7);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setTextColor(100, 100, 100);
+  const technicalNote = pdf.splitTextToSize(
+    'Technical details: Data encrypted with AES-256-GCM (IV: first 12 bytes), compressed with gzip, encoded in base64. ' +
+    'One QR contains the encrypted data, the other contains the encryption key.',
+    pageWidth - 2 * margin
+  );
+  pdf.text(technicalNote, margin, yPos);
+
+  pdf.setTextColor(0, 0, 0);
 }
