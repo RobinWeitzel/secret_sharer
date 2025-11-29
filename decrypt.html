@@ -54,24 +54,16 @@
                 </div>
               </div>
 
-              <!-- QR Scanner -->
-              <div id="scannerContainer" class="mb-6">
-                <div class="border-2 border-gray-300 rounded-lg p-4">
-                  <div id="qrReader" class="w-full"></div>
-                </div>
-                <div class="mt-4 flex gap-2">
-                  <button
-                    id="startScanBtn"
-                    class="flex-1 bg-indigo-600 text-white px-6 py-3 rounded-md font-medium hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Start Camera
-                  </button>
-                  <button
-                    id="stopScanBtn"
-                    class="flex-1 bg-gray-600 text-white px-6 py-3 rounded-md font-medium hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 hidden"
-                  >
-                    Stop Camera
-                  </button>
+              <!-- Instructions -->
+              <div id="instructionsContainer" class="hidden mb-6">
+                <div class="bg-indigo-50 border border-indigo-200 rounded-md p-6">
+                  <h3 class="text-lg font-semibold text-indigo-900 mb-3">Next Step</h3>
+                  <ol class="list-decimal list-inside space-y-2 text-sm text-indigo-800">
+                    <li>Open your phone's camera app</li>
+                    <li>Point it at the second QR code</li>
+                    <li>Tap the notification to open the link</li>
+                    <li>Your secrets will be decrypted automatically</li>
+                  </ol>
                 </div>
               </div>
 

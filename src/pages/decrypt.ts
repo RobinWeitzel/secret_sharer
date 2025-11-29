@@ -1,162 +1,104 @@
-import { Html5Qrcode } from 'html5-qrcode';
 import { importKey, decrypt } from '../crypto';
 import { decompress } from '../compression';
 import { getQueryParam } from '../utils';
+import { registerServiceWorker, storeData, storeKey, getAll, clearStorage } from '../serviceWorker';
 
 interface DecryptState {
   encryptedData: string | null;
   encryptionKey: string | null;
-  scanner: Html5Qrcode | null;
-  isScanning: boolean;
 }
 
 const state: DecryptState = {
   encryptedData: null,
   encryptionKey: null,
-  scanner: null,
-  isScanning: false,
 };
 
 document.addEventListener('DOMContentLoaded', initDecryptPage);
 
-function initDecryptPage(): void {
-  checkQueryParams();
-  setupEventListeners();
-  updateStatus();
+async function initDecryptPage(): Promise<void> {
+  await registerServiceWorker();
+  await loadDataFromUrlAndServiceWorker();
+  updateUI();
 }
 
-function checkQueryParams(): void {
-  const data = getQueryParam('data');
-  const key = getQueryParam('key');
+async function loadDataFromUrlAndServiceWorker(): Promise<void> {
+  const urlData = getQueryParam('data');
+  const urlKey = getQueryParam('key');
 
-  if (data) {
-    state.encryptedData = data;
+  if (urlData) {
+    state.encryptedData = urlData;
+    await storeData(urlData);
   }
 
-  if (key) {
-    state.encryptionKey = key;
+  if (urlKey) {
+    state.encryptionKey = urlKey;
+    await storeKey(urlKey);
+  }
+
+  const stored = await getAll();
+
+  if (!state.encryptedData && stored.data) {
+    state.encryptedData = stored.data;
+  }
+
+  if (!state.encryptionKey && stored.key) {
+    state.encryptionKey = stored.key;
   }
 }
 
-function setupEventListeners(): void {
-  const startBtn = document.getElementById('startScanBtn');
-  const stopBtn = document.getElementById('stopScanBtn');
-  const copyBtn = document.getElementById('copyBtn');
-
-  startBtn?.addEventListener('click', handleStartScan);
-  stopBtn?.addEventListener('click', handleStopScan);
-  copyBtn?.addEventListener('click', handleCopy);
-}
-
-function updateStatus(): void {
-  const statusText = document.getElementById('statusText');
-  if (!statusText) return;
+function updateUI(): void {
+  const statusContainer = document.getElementById('statusContainer');
+  const instructionsContainer = document.getElementById('instructionsContainer');
 
   const hasData = !!state.encryptedData;
   const hasKey = !!state.encryptionKey;
 
   if (hasData && hasKey) {
-    statusText.textContent = 'Both QR codes received! Decrypting...';
+    statusContainer?.classList.add('hidden');
+    instructionsContainer?.classList.add('hidden');
     decryptAndDisplay();
   } else if (hasData) {
-    statusText.textContent = 'Encrypted data received. Please scan the decryption key QR code.';
+    updateStatus('Encrypted data received. Please scan the decryption key QR code with your camera app.', 'blue');
+    instructionsContainer?.classList.remove('hidden');
   } else if (hasKey) {
-    statusText.textContent = 'Decryption key received. Please scan the encrypted data QR code.';
+    updateStatus('Decryption key received. Please scan the encrypted data QR code with your camera app.', 'blue');
+    instructionsContainer?.classList.remove('hidden');
   } else {
-    statusText.textContent = 'Please scan the first QR code to begin.';
+    updateStatus('Please scan the first QR code using your camera app to begin.', 'blue');
+    instructionsContainer?.classList.add('hidden');
   }
 }
 
-async function handleStartScan(): Promise<void> {
-  const qrReader = document.getElementById('qrReader');
-  const startBtn = document.getElementById('startScanBtn');
-  const stopBtn = document.getElementById('stopScanBtn');
+function updateStatus(message: string, color: 'blue' | 'red'): void {
+  const statusText = document.getElementById('statusText');
+  const statusContainer = document.getElementById('statusContainer');
 
-  if (!qrReader || !startBtn || !stopBtn) return;
+  if (!statusText || !statusContainer) return;
 
-  try {
-    state.scanner = new Html5Qrcode('qrReader');
+  statusText.textContent = message;
 
-    await state.scanner.start(
-      { facingMode: 'environment' },
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-      },
-      onScanSuccess,
-      onScanError
-    );
-
-    state.isScanning = true;
-    startBtn.classList.add('hidden');
-    stopBtn.classList.remove('hidden');
-  } catch (error) {
-    console.error('Error starting camera:', error);
-    alert('Failed to start camera. Please ensure camera permissions are granted.');
+  if (color === 'blue') {
+    statusContainer.classList.remove('bg-red-50', 'border-red-200');
+    statusContainer.classList.add('bg-blue-50', 'border-blue-200');
+    statusText.classList.remove('text-red-700');
+    statusText.classList.add('text-blue-700');
+  } else {
+    statusContainer.classList.remove('bg-blue-50', 'border-blue-200');
+    statusContainer.classList.add('bg-red-50', 'border-red-200');
+    statusText.classList.remove('text-blue-700');
+    statusText.classList.add('text-red-700');
   }
-}
-
-async function handleStopScan(): Promise<void> {
-  const startBtn = document.getElementById('startScanBtn');
-  const stopBtn = document.getElementById('stopScanBtn');
-
-  if (!state.scanner || !state.isScanning) return;
-
-  try {
-    await state.scanner.stop();
-    state.scanner.clear();
-    state.isScanning = false;
-
-    startBtn?.classList.remove('hidden');
-    stopBtn?.classList.add('hidden');
-  } catch (error) {
-    console.error('Error stopping camera:', error);
-  }
-}
-
-function onScanSuccess(decodedText: string): void {
-  try {
-    const url = new URL(decodedText);
-    const params = new URLSearchParams(url.search);
-
-    const data = params.get('data');
-    const key = params.get('key');
-
-    let updated = false;
-
-    if (data && !state.encryptedData) {
-      state.encryptedData = data;
-      updated = true;
-    }
-
-    if (key && !state.encryptionKey) {
-      state.encryptionKey = key;
-      updated = true;
-    }
-
-    if (updated) {
-      updateStatus();
-
-      if (state.encryptedData && state.encryptionKey) {
-        handleStopScan();
-      }
-    }
-  } catch (error) {
-    console.error('Invalid QR code format:', error);
-  }
-}
-
-function onScanError(_errorMessage: string): void {
-  // Ignore scan errors as they happen frequently during scanning
 }
 
 async function decryptAndDisplay(): Promise<void> {
   if (!state.encryptedData || !state.encryptionKey) return;
 
-  const scannerContainer = document.getElementById('scannerContainer');
+  const statusContainer = document.getElementById('statusContainer');
   const secretsContainer = document.getElementById('secretsContainer');
   const secretsDisplay = document.getElementById('secretsDisplay');
-  const statusContainer = document.getElementById('statusContainer');
+  const copyBtn = document.getElementById('copyBtn');
+
+  updateStatus('Decrypting...', 'blue');
 
   try {
     const key = await importKey(state.encryptionKey);
@@ -167,20 +109,17 @@ async function decryptAndDisplay(): Promise<void> {
       secretsDisplay.textContent = decompressed;
     }
 
-    scannerContainer?.classList.add('hidden');
+    await clearStorage();
+
     statusContainer?.classList.add('hidden');
     secretsContainer?.classList.remove('hidden');
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', handleCopy);
+    }
   } catch (error) {
     console.error('Decryption error:', error);
-    const statusText = document.getElementById('statusText');
-    if (statusText) {
-      statusText.textContent = 'Error decrypting data. Please ensure both QR codes are from the same set.';
-      const statusContainer = statusText.closest('.bg-blue-50');
-      statusContainer?.classList.remove('bg-blue-50', 'border-blue-200');
-      statusContainer?.classList.add('bg-red-50', 'border-red-200');
-      statusText.classList.remove('text-blue-700');
-      statusText.classList.add('text-red-700');
-    }
+    updateStatus('Error decrypting data. Please ensure both QR codes are from the same set.', 'red');
   }
 }
 
