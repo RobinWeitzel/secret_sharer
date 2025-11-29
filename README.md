@@ -4,6 +4,14 @@ A secure, client-side web application for sharing confidential information using
 
 **[Live Demo →](https://robinweitzel.github.io/secret_sharer/)**
 
+---
+
+## ⚠️ Important Disclaimer
+
+**This project was developed with the assistance of AI (Claude Code).** While the code has been tested and follows security best practices, users should thoroughly review and audit the code themselves before using it for sensitive information. This is open-source software provided as-is, and you use it at your own risk.
+
+---
+
 ## Why This Exists
 
 Imagine you need to leave important passwords or confidential information with family members for emergencies—like bank account access if you're unavailable or incapacitated. Simply printing passwords on paper creates a significant security risk: anyone who finds it could access your accounts.
@@ -195,7 +203,3 @@ Tested on:
 ## License
 
 This project is open source and available under the MIT License.
-
-## Disclaimer
-
-This project was developed with the assistance of AI (Claude Code). While the code has been tested and follows security best practices, users should review and audit the code themselves before using it for sensitive information.
