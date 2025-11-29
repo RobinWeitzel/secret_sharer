@@ -2,20 +2,37 @@ import { importKey, decrypt } from '../crypto';
 import { decompress } from '../compression';
 import { getFragmentParam } from '../utils';
 import { registerServiceWorker, storeData, storeKey, getAll, clearStorage } from '../serviceWorker';
+import { checkBrowserCompatibility, showCompatibilityError } from '../browserCompat';
+import { showError as showErrorNotification, showWarning } from '../notifications';
 
 interface DecryptState {
   encryptedData: string | null;
   encryptionKey: string | null;
+  failedAttempts: number;
+  lastAttemptTime: number;
+  lockedUntil: number;
 }
 
 const state: DecryptState = {
   encryptedData: null,
   encryptionKey: null,
+  failedAttempts: 0,
+  lastAttemptTime: 0,
+  lockedUntil: 0,
 };
+
+const MAX_ATTEMPTS_BEFORE_DELAY = 3;
+const BASE_DELAY_MS = 5000; // 5 seconds
 
 document.addEventListener('DOMContentLoaded', initDecryptPage);
 
 async function initDecryptPage(): Promise<void> {
+  const compatResult = checkBrowserCompatibility();
+  if (!compatResult.compatible) {
+    showCompatibilityError(compatResult.missingFeatures);
+    return;
+  }
+
   await registerServiceWorker();
   await loadDataFromUrlAndServiceWorker();
   updateUI();
@@ -82,7 +99,15 @@ async function handleDecryptClick(securityCodeInput: HTMLInputElement): Promise<
   const securityCode = securityCodeInput.value.trim();
 
   if (securityCode.length !== 8) {
-    alert('Please enter the 8-character security code');
+    showErrorNotification('Please enter the 8-character security code');
+    return;
+  }
+
+  const now = Date.now();
+
+  if (state.lockedUntil > now) {
+    const remainingSeconds = Math.ceil((state.lockedUntil - now) / 1000);
+    showWarning(`Too many failed attempts. Please wait ${remainingSeconds} seconds before trying again.`);
     return;
   }
 
@@ -198,6 +223,9 @@ async function decryptAndDisplay(securityCode: string): Promise<void> {
 
     await clearStorage();
 
+    state.failedAttempts = 0;
+    state.lockedUntil = 0;
+
     step4Content?.classList.add('hidden');
     updateProgress(3, 'complete');
     secretsContainer?.classList.remove('hidden');
@@ -207,7 +235,19 @@ async function decryptAndDisplay(securityCode: string): Promise<void> {
     }
   } catch (error) {
     console.error('Decryption error:', error);
-    showError('Error decrypting the information. Please ensure both QR codes are from the same document set and that you entered the correct security code.');
+    handleFailedDecryption();
+    showError('Decryption failed. Please verify your security code.');
+  }
+}
+
+function handleFailedDecryption(): void {
+  state.failedAttempts++;
+  state.lastAttemptTime = Date.now();
+
+  if (state.failedAttempts >= MAX_ATTEMPTS_BEFORE_DELAY) {
+    const delayMultiplier = state.failedAttempts - MAX_ATTEMPTS_BEFORE_DELAY + 1;
+    const delay = BASE_DELAY_MS * Math.pow(2, Math.min(delayMultiplier - 1, 5));
+    state.lockedUntil = Date.now() + delay;
   }
 }
 
@@ -282,6 +322,6 @@ async function handleCopy(): Promise<void> {
     }, 2000);
   } catch (error) {
     console.error('Failed to copy:', error);
-    alert('Failed to copy to clipboard');
+    showErrorNotification('Failed to copy to clipboard');
   }
 }

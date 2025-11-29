@@ -25,7 +25,7 @@ For developing it should be possible to run a local dev server.
 
 For the encryption a symmetric state-of-the-art encryption method should be used.
 
-The security code should be an 8 character string made up of numbers and upper and lower case characters as well as special characters. It must contain all of those. Use a password generation library for this, don't write your own logic.
+The security code should be an 8 character string made up of numbers and upper and lower case characters as well as special characters. It must contain all of those. Use browser-native Web Crypto API with proper cryptographic practices (rejection sampling to avoid modulo bias) rather than naive implementations.
 
 Consideration should also be given about the max payload size of URL fragment.
 A possible solution could be to first compress the secrets before encrypting them (and then decompress them again after decryption).

@@ -1,14 +1,10 @@
-const CACHE_NAME = 'secret-sharer-v1';
-const QR_DATA_KEY = 'qr-data';
-const QR_KEY_KEY = 'qr-key';
-
 let temporaryStorage = {
   data: null,
   key: null,
   timestamp: null
 };
 
-const MAX_AGE_MS = 5 * 60 * 1000; // 5 minutes
+const MAX_AGE_MS = 5 * 60 * 1000;
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

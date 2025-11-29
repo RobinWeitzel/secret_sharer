@@ -4,3 +4,26 @@
 .hidden {
   display: none;
 }
+
+/* Toast notification styles */
+.notification-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s ease-in-out;
+}
+
+.notification-toast.fade-out {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 640px) {
+  .notification-toast {
+    left: 20px;
+    right: 20px;
+  }
+}

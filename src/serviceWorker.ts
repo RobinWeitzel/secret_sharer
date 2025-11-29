@@ -1,3 +1,15 @@
+interface ServiceWorkerMessage<T = void> {
+  type: string;
+  payload?: T;
+}
+
+interface ServiceWorkerResponse<T = unknown> {
+  error?: string;
+  data?: T;
+  key?: T;
+  success?: boolean;
+}
+
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
   if (!('serviceWorker' in navigator)) {
     console.warn('Service Workers not supported');
@@ -16,7 +28,10 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
   }
 }
 
-async function sendMessage(type: string, payload?: unknown): Promise<unknown> {
+async function sendMessage<TPayload = void, TResponse = unknown>(
+  type: string,
+  payload?: TPayload
+): Promise<TResponse> {
   const controller = navigator.serviceWorker.controller;
 
   if (!controller) {
@@ -25,45 +40,42 @@ async function sendMessage(type: string, payload?: unknown): Promise<unknown> {
 
   const messageChannel = new MessageChannel();
 
-  return new Promise((resolve, reject) => {
-    messageChannel.port1.onmessage = (event) => {
+  return new Promise<TResponse>((resolve, reject) => {
+    messageChannel.port1.onmessage = (event: MessageEvent<ServiceWorkerResponse<TResponse>>) => {
       if (event.data.error) {
         reject(new Error(event.data.error));
       } else {
-        resolve(event.data);
+        resolve(event.data as TResponse);
       }
     };
 
-    controller.postMessage(
-      { type, payload },
-      [messageChannel.port2]
-    );
+    const message: ServiceWorkerMessage<TPayload> = { type, payload };
+    controller.postMessage(message, [messageChannel.port2]);
   });
 }
 
 export async function storeData(data: string): Promise<void> {
-  await sendMessage('STORE_DATA', data);
+  await sendMessage<string, { success: boolean }>('STORE_DATA', data);
 }
 
 export async function storeKey(key: string): Promise<void> {
-  await sendMessage('STORE_KEY', key);
+  await sendMessage<string, { success: boolean }>('STORE_KEY', key);
 }
 
 export async function getData(): Promise<string | null> {
-  const response = await sendMessage('GET_DATA') as { data: string | null };
+  const response = await sendMessage<void, { data: string | null }>('GET_DATA');
   return response.data;
 }
 
 export async function getKey(): Promise<string | null> {
-  const response = await sendMessage('GET_KEY') as { key: string | null };
+  const response = await sendMessage<void, { key: string | null }>('GET_KEY');
   return response.key;
 }
 
 export async function getAll(): Promise<{ data: string | null; key: string | null }> {
-  const response = await sendMessage('GET_ALL') as { data: string | null; key: string | null };
-  return response;
+  return await sendMessage<void, { data: string | null; key: string | null }>('GET_ALL');
 }
 
 export async function clearStorage(): Promise<void> {
-  await sendMessage('CLEAR');
+  await sendMessage<void, { success: boolean }>('CLEAR');
 }

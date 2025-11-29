@@ -5,6 +5,12 @@
 import QRCode from 'qrcode';
 import { getDecryptPageURL } from './utils';
 
+const QR_CODE_WIDTH_LARGE = 400;
+const QR_CODE_WIDTH_SMALL = 300;
+const QR_CODE_MARGIN_STANDARD = 2;
+const QR_CODE_MARGIN_COMPACT = 1;
+const QR_ERROR_CORRECTION_LEVEL = 'M' as const;
+
 export interface QRCodePair {
   dataQR: string;
   keyQR: string;
@@ -33,15 +39,15 @@ export async function generateQRCodes(
 
   // Generate QR codes as data URLs
   const dataQR = await QRCode.toDataURL(dataURL, {
-    errorCorrectionLevel: 'M',
-    width: 400,
-    margin: 2,
+    errorCorrectionLevel: QR_ERROR_CORRECTION_LEVEL,
+    width: QR_CODE_WIDTH_LARGE,
+    margin: QR_CODE_MARGIN_STANDARD,
   });
 
   const keyQR = await QRCode.toDataURL(keyURL, {
-    errorCorrectionLevel: 'M',
-    width: 400,
-    margin: 2,
+    errorCorrectionLevel: QR_ERROR_CORRECTION_LEVEL,
+    width: QR_CODE_WIDTH_LARGE,
+    margin: QR_CODE_MARGIN_STANDARD,
   });
 
   return { dataQR, keyQR };
@@ -60,35 +66,30 @@ export async function generateQRCodeSet(
   const dataURL = `${decryptURL}#data=${encodeURIComponent(encryptedData)}`;
   const keyURL = `${decryptURL}#key=${encodeURIComponent(encryptionKey)}`;
 
-  console.log('=== QR Code URLs for Testing ===');
-  console.log('Data QR Code URL:', dataURL);
-  console.log('Key QR Code URL:', keyURL);
-  console.log('================================');
-
   // Generate QR codes with URLs
   const dataQR = await QRCode.toDataURL(dataURL, {
-    errorCorrectionLevel: 'M',
-    width: 400,
-    margin: 2,
+    errorCorrectionLevel: QR_ERROR_CORRECTION_LEVEL,
+    width: QR_CODE_WIDTH_LARGE,
+    margin: QR_CODE_MARGIN_STANDARD,
   });
 
   const keyQR = await QRCode.toDataURL(keyURL, {
-    errorCorrectionLevel: 'M',
-    width: 400,
-    margin: 2,
+    errorCorrectionLevel: QR_ERROR_CORRECTION_LEVEL,
+    width: QR_CODE_WIDTH_LARGE,
+    margin: QR_CODE_MARGIN_STANDARD,
   });
 
   // Generate data-only QR codes (without URLs) for fallback
   const dataOnlyQR = await QRCode.toDataURL(encryptedData, {
-    errorCorrectionLevel: 'M',
-    width: 300,
-    margin: 1,
+    errorCorrectionLevel: QR_ERROR_CORRECTION_LEVEL,
+    width: QR_CODE_WIDTH_SMALL,
+    margin: QR_CODE_MARGIN_COMPACT,
   });
 
   const keyOnlyQR = await QRCode.toDataURL(encryptionKey, {
-    errorCorrectionLevel: 'M',
-    width: 300,
-    margin: 1,
+    errorCorrectionLevel: QR_ERROR_CORRECTION_LEVEL,
+    width: QR_CODE_WIDTH_SMALL,
+    margin: QR_CODE_MARGIN_COMPACT,
   });
 
   return { dataQR, keyQR, dataOnlyQR, keyOnlyQR };

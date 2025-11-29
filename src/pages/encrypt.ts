@@ -2,6 +2,8 @@ import { compress } from '../compression';
 import { generateKey, exportKey, encrypt, generateSecurityCode } from '../crypto';
 import { generateQRCodeSet, renderQRCode } from '../qrcode';
 import { generatePDF } from '../pdf';
+import { checkBrowserCompatibility, showCompatibilityError } from '../browserCompat';
+import { showError } from '../notifications';
 
 // Store QR codes and security code for PDF generation
 let currentQRCodes: { dataQR: string; keyQR: string; dataOnlyQR: string; keyOnlyQR: string } | null = null;
@@ -11,6 +13,12 @@ let currentSecurityCode: string | null = null;
 document.addEventListener('DOMContentLoaded', initEncryptPage);
 
 function initEncryptPage(): void {
+  const compatResult = checkBrowserCompatibility();
+  if (!compatResult.compatible) {
+    showCompatibilityError(compatResult.missingFeatures);
+    return;
+  }
+
   const elements = getPageElements();
   if (!elements) return;
 
@@ -73,7 +81,7 @@ async function handleGenerateClick(
   const secrets = secretsTextarea.value.trim();
 
   if (!secrets) {
-    alert('Please enter some secrets to encrypt');
+    showError('Please enter some secrets to encrypt');
     return;
   }
 
@@ -91,7 +99,7 @@ async function handleGenerateClick(
 
 function handleDownloadClick(): void {
   if (!currentQRCodes || !currentSecurityCode) {
-    alert('Please generate QR codes first');
+    showError('Please generate QR codes first');
     return;
   }
 
@@ -139,5 +147,5 @@ function showQRCodesSection(container: HTMLElement): void {
 
 function handleGenerateError(error: unknown): void {
   console.error('Error generating QR codes:', error);
-  alert('An error occurred while generating QR codes. Please try again.');
+  showError('An error occurred while generating QR codes. Please try again.');
 }

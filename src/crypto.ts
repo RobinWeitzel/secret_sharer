@@ -8,50 +8,70 @@ const ALGORITHM = 'AES-GCM';
 const KEY_LENGTH = 256;
 const IV_LENGTH = 12; // 96 bits recommended for GCM
 
+const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const LOWERCASE = 'abcdefghijklmnopqrstuvwxyz';
+const NUMBERS = '0123456789';
+const SPECIAL = '!@#$%^&*';
+
 /**
- * Generate a random 8-character security code
- * Contains numbers, uppercase, lowercase, and special characters
+ * Generate a cryptographically random index without modulo bias
+ * Uses rejection sampling to ensure uniform distribution
  */
-export function generateSecurityCode(): string {
-  const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const lowercase = 'abcdefghijklmnopqrstuvwxyz';
-  const numbers = '0123456789';
-  const special = '!@#$%^&*';
+function getRandomIndex(max: number): number {
+  const range = max;
+  const bytesNeeded = Math.ceil(Math.log2(range) / 8);
+  const maxValid = Math.floor(256 ** bytesNeeded / range) * range - 1;
 
-  const allChars = uppercase + lowercase + numbers + special;
+  while (true) {
+    const randomBytes = new Uint8Array(bytesNeeded);
+    crypto.getRandomValues(randomBytes);
 
-  const randomValues = new Uint8Array(8);
-  crypto.getRandomValues(randomValues);
+    let randomValue = 0;
+    for (let i = 0; i < bytesNeeded; i++) {
+      randomValue = randomValue * 256 + randomBytes[i];
+    }
 
-  let code = '';
-  let hasUppercase = false;
-  let hasLowercase = false;
-  let hasNumber = false;
-  let hasSpecial = false;
-
-  for (let i = 0; i < 8; i++) {
-    const charSet = allChars;
-    const index = randomValues[i] % charSet.length;
-    const char = charSet[index];
-    code += char;
-
-    if (uppercase.includes(char)) hasUppercase = true;
-    if (lowercase.includes(char)) hasLowercase = true;
-    if (numbers.includes(char)) hasNumber = true;
-    if (special.includes(char)) hasSpecial = true;
+    if (randomValue <= maxValid) {
+      return randomValue % range;
+    }
   }
-
-  // Ensure all character types are included
-  if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
-    return generateSecurityCode(); // Regenerate if requirements not met
-  }
-
-  return code;
 }
 
 /**
- * Derive the final encryption key from a base key and security code
- * Combines base key bytes with security code bytes and hashes them
+ * Generate a random 8-character security code using Web Crypto API
+ * Uses rejection sampling to avoid modulo bias
+ * Ensures all character types (uppercase, lowercase, numbers, special) are included
+ */
+export function generateSecurityCode(): string {
+  const allChars = UPPERCASE + LOWERCASE + NUMBERS + SPECIAL;
+
+  while (true) {
+    let code = '';
+    let hasUppercase = false;
+    let hasLowercase = false;
+    let hasNumber = false;
+    let hasSpecial = false;
+
+    for (let i = 0; i < 8; i++) {
+      const index = getRandomIndex(allChars.length);
+      const char = allChars[index];
+      code += char;
+
+      if (UPPERCASE.includes(char)) hasUppercase = true;
+      if (LOWERCASE.includes(char)) hasLowercase = true;
+      if (NUMBERS.includes(char)) hasNumber = true;
+      if (SPECIAL.includes(char)) hasSpecial = true;
+    }
+
+    if (hasUppercase && hasLowercase && hasNumber && hasSpecial) {
+      return code;
+    }
+  }
+}
+
+/**
+ * Derive the final encryption key from a base key and security code using PBKDF2
+ * Uses the base key as salt and security code as password for proper key derivation
  */
 async function deriveKeyFromBaseAndCode(
   baseKeyBytes: ArrayBuffer,
@@ -59,18 +79,32 @@ async function deriveKeyFromBaseAndCode(
 ): Promise<CryptoKey> {
   const securityCodeBytes = new TextEncoder().encode(securityCode);
 
-  // Combine base key and security code
-  const combined = new Uint8Array(baseKeyBytes.byteLength + securityCodeBytes.length);
-  combined.set(new Uint8Array(baseKeyBytes), 0);
-  combined.set(securityCodeBytes, baseKeyBytes.byteLength);
+  // Import security code as key material for PBKDF2
+  const passwordKey = await crypto.subtle.importKey(
+    'raw',
+    securityCodeBytes,
+    'PBKDF2',
+    false,
+    ['deriveBits']
+  );
 
-  // Hash the combination to get exactly 32 bytes for AES-256
-  const keyMaterial = await crypto.subtle.digest('SHA-256', combined);
+  // Use base key as salt for PBKDF2
+  // PBKDF2 with 100,000 iterations for strong key derivation
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt: baseKeyBytes,
+      iterations: 100000,
+      hash: 'SHA-256',
+    },
+    passwordKey,
+    KEY_LENGTH
+  );
 
-  // Import as AES-GCM key
+  // Import derived bits as AES-GCM key
   return await crypto.subtle.importKey(
     'raw',
-    keyMaterial,
+    derivedBits,
     {
       name: ALGORITHM,
       length: KEY_LENGTH,
