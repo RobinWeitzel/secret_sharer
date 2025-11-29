@@ -55,10 +55,10 @@ function updateUI(): void {
     decryptAndDisplay();
   } else if (hasData) {
     showStep(2);
-    updateStepMessage('Encrypted data received. Now scan the QR code with the decryption key.', 'Now scan the QR code labeled "Decryption Key" using your camera app.');
+    updateStepMessage('First part received. Now scan the QR code from the other document.', 'Scan the QR code from the other part of the document to access the information.');
   } else if (hasKey) {
     showStep(2);
-    updateStepMessage('Decryption key received. Now scan the QR code with the encrypted data.', 'Now scan the QR code labeled "Encrypted Data" using your camera app.');
+    updateStepMessage('First part received. Now scan the QR code from the other document.', 'Scan the QR code from the other part of the document to access the information.');
   } else {
     showStep(1);
   }
@@ -174,7 +174,7 @@ async function decryptAndDisplay(): Promise<void> {
     }
   } catch (error) {
     console.error('Decryption error:', error);
-    showError('Error decrypting data. Please ensure both QR codes are from the same set.');
+    showError('Error decrypting the information. Please ensure both QR codes are from the same document set.');
   }
 }
 
