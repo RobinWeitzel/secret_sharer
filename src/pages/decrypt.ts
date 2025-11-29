@@ -47,58 +47,91 @@ async function loadDataFromUrlAndServiceWorker(): Promise<void> {
 }
 
 function updateUI(): void {
-  const statusContainer = document.getElementById('statusContainer');
-  const instructionsContainer = document.getElementById('instructionsContainer');
-
   const hasData = !!state.encryptedData;
   const hasKey = !!state.encryptionKey;
 
   if (hasData && hasKey) {
-    statusContainer?.classList.add('hidden');
-    instructionsContainer?.classList.add('hidden');
+    showStep(3);
     decryptAndDisplay();
   } else if (hasData) {
-    updateStatus('Encrypted data received. Please scan the decryption key QR code with your camera app.', 'blue');
-    instructionsContainer?.classList.remove('hidden');
+    showStep(2);
+    updateStepMessage('Encrypted data received. Now scan the QR code with the decryption key.', 'Now scan the QR code labeled "Decryption Key" using your camera app.');
   } else if (hasKey) {
-    updateStatus('Decryption key received. Please scan the encrypted data QR code with your camera app.', 'blue');
-    instructionsContainer?.classList.remove('hidden');
+    showStep(2);
+    updateStepMessage('Decryption key received. Now scan the QR code with the encrypted data.', 'Now scan the QR code labeled "Encrypted Data" using your camera app.');
   } else {
-    updateStatus('Please scan the first QR code using your camera app to begin.', 'blue');
-    instructionsContainer?.classList.add('hidden');
+    showStep(1);
   }
 }
 
-function updateStatus(message: string, color: 'blue' | 'red'): void {
-  const statusText = document.getElementById('statusText');
-  const statusContainer = document.getElementById('statusContainer');
+function showStep(step: number): void {
+  const step1Content = document.getElementById('step1Content');
+  const step2Content = document.getElementById('step2Content');
+  const step3Content = document.getElementById('step3Content');
+  const secretsContainer = document.getElementById('secretsContainer');
+  const errorContainer = document.getElementById('errorContainer');
 
-  if (!statusText || !statusContainer) return;
+  step1Content?.classList.add('hidden');
+  step2Content?.classList.add('hidden');
+  step3Content?.classList.add('hidden');
+  secretsContainer?.classList.add('hidden');
+  errorContainer?.classList.add('hidden');
 
-  statusText.textContent = message;
-
-  if (color === 'blue') {
-    statusContainer.classList.remove('bg-red-50', 'border-red-200');
-    statusContainer.classList.add('bg-blue-50', 'border-blue-200');
-    statusText.classList.remove('text-red-700');
-    statusText.classList.add('text-blue-700');
-  } else {
-    statusContainer.classList.remove('bg-blue-50', 'border-blue-200');
-    statusContainer.classList.add('bg-red-50', 'border-red-200');
-    statusText.classList.remove('text-blue-700');
-    statusText.classList.add('text-red-700');
+  if (step === 1) {
+    step1Content?.classList.remove('hidden');
+    updateProgress(1, 'active');
+  } else if (step === 2) {
+    step2Content?.classList.remove('hidden');
+    updateProgress(1, 'complete');
+    updateProgress(2, 'active');
+  } else if (step === 3) {
+    step3Content?.classList.remove('hidden');
+    updateProgress(1, 'complete');
+    updateProgress(2, 'complete');
+    updateProgress(3, 'active');
   }
+}
+
+function updateProgress(step: number, status: 'active' | 'complete'): void {
+  const stepElement = document.getElementById(`step${step}`);
+  const progressBar = document.getElementById(`progress${step}`)?.querySelector('div');
+
+  if (!stepElement) return;
+
+  const circle = stepElement.querySelector('div');
+  const text = stepElement.querySelector('p');
+
+  if (status === 'complete') {
+    circle?.classList.remove('bg-gray-300', 'bg-blue-600');
+    circle?.classList.add('bg-green-600');
+    circle?.classList.remove('text-gray-600');
+    circle?.classList.add('text-white');
+    text?.classList.remove('text-gray-500');
+    text?.classList.add('text-gray-900');
+    progressBar?.style.setProperty('width', '100%');
+  } else if (status === 'active') {
+    circle?.classList.remove('bg-gray-300');
+    circle?.classList.add('bg-blue-600', 'text-white');
+    text?.classList.remove('text-gray-500');
+    text?.classList.add('text-gray-900');
+  }
+}
+
+function updateStepMessage(message: string, instruction: string): void {
+  const step2Message = document.getElementById('step2Message');
+  const step2Instruction = document.getElementById('step2Instruction');
+
+  if (step2Message) step2Message.textContent = message;
+  if (step2Instruction) step2Instruction.textContent = instruction;
 }
 
 async function decryptAndDisplay(): Promise<void> {
   if (!state.encryptedData || !state.encryptionKey) return;
 
-  const statusContainer = document.getElementById('statusContainer');
+  const step3Content = document.getElementById('step3Content');
   const secretsContainer = document.getElementById('secretsContainer');
   const secretsDisplay = document.getElementById('secretsDisplay');
   const copyBtn = document.getElementById('copyBtn');
-
-  updateStatus('Decrypting...', 'blue');
 
   try {
     const key = await importKey(state.encryptionKey);
@@ -111,7 +144,8 @@ async function decryptAndDisplay(): Promise<void> {
 
     await clearStorage();
 
-    statusContainer?.classList.add('hidden');
+    step3Content?.classList.add('hidden');
+    updateProgress(3, 'complete');
     secretsContainer?.classList.remove('hidden');
 
     if (copyBtn) {
@@ -119,7 +153,20 @@ async function decryptAndDisplay(): Promise<void> {
     }
   } catch (error) {
     console.error('Decryption error:', error);
-    updateStatus('Error decrypting data. Please ensure both QR codes are from the same set.', 'red');
+    showError('Error decrypting data. Please ensure both QR codes are from the same set.');
+  }
+}
+
+function showError(message: string): void {
+  const step3Content = document.getElementById('step3Content');
+  const errorContainer = document.getElementById('errorContainer');
+  const errorMessage = document.getElementById('errorMessage');
+
+  step3Content?.classList.add('hidden');
+  errorContainer?.classList.remove('hidden');
+
+  if (errorMessage) {
+    errorMessage.textContent = message;
   }
 }
 

@@ -19,7 +19,10 @@
                 <h1 class="text-2xl font-bold text-gray-900">Secret Sharer</h1>
               </div>
               <nav class="flex space-x-4">
-                <a href="./index.html" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                <a href="./index.html" class="text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                  Home
+                </a>
+                <a href="./decrypt.html" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
                   Decrypt
                 </a>
                 <a href="./encrypt.html" class="text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors">
@@ -31,57 +34,209 @@
         </header>
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div class="max-w-3xl mx-auto">
+          <div class="max-w-4xl mx-auto">
+            <!-- Progress Indicator -->
+            <div class="mb-8">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center flex-1">
+                  <div id="step1" class="flex items-center">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-600 text-white font-bold">
+                      1
+                    </div>
+                    <div class="ml-3 hidden sm:block">
+                      <p class="text-sm font-medium text-gray-900">Scan First QR Code</p>
+                    </div>
+                  </div>
+                  <div id="progress1" class="flex-1 h-1 mx-4 bg-gray-200">
+                    <div class="h-full bg-blue-600 transition-all duration-500" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div class="flex items-center flex-1">
+                  <div id="step2" class="flex items-center">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-bold">
+                      2
+                    </div>
+                    <div class="ml-3 hidden sm:block">
+                      <p class="text-sm font-medium text-gray-500">Scan Second QR Code</p>
+                    </div>
+                  </div>
+                  <div id="progress2" class="flex-1 h-1 mx-4 bg-gray-200">
+                    <div class="h-full bg-blue-600 transition-all duration-500" style="width: 0%"></div>
+                  </div>
+                </div>
+                <div id="step3" class="flex items-center">
+                  <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-gray-600 font-bold">
+                    3
+                  </div>
+                  <div class="ml-3 hidden sm:block">
+                    <p class="text-sm font-medium text-gray-500">View Secrets</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Card -->
             <div class="bg-white rounded-lg shadow-md p-8">
-              <h2 class="text-3xl font-bold text-gray-900 mb-4">Decrypt Your Secrets</h2>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">Decrypt Your Secrets</h2>
               <p class="text-gray-600 mb-8">
-                Scan both QR codes to reveal your secrets. You can scan them in any order.
+                Follow the steps below to reveal your secrets. You'll need both QR codes.
               </p>
 
-              <!-- Status Display -->
-              <div id="statusContainer" class="mb-6">
-                <div class="bg-blue-50 border border-blue-200 rounded-md p-4">
-                  <div class="flex items-start">
+              <!-- Step 1: Scan First QR Code -->
+              <div id="step1Content" class="space-y-6">
+                <div class="p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
+                  <div class="flex items-start space-x-4 mb-4">
                     <div class="flex-shrink-0">
-                      <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                      <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
                       </svg>
                     </div>
-                    <div class="ml-3">
-                      <p id="statusText" class="text-sm text-blue-700"></p>
+                    <div class="flex-1">
+                      <h3 class="text-xl font-semibold text-blue-900 mb-2">Scan the First QR Code</h3>
+                      <p class="text-blue-800">Use your phone's camera app to scan one of the two QR codes. It doesn't matter which one you scan first.</p>
+                    </div>
+                  </div>
+                  <ol class="list-decimal list-inside space-y-2 text-blue-900 ml-16">
+                    <li>Open your phone's camera app</li>
+                    <li>Point it at the QR code</li>
+                    <li>Tap the notification that appears</li>
+                    <li>This page will reload with the first piece of data</li>
+                  </ol>
+                </div>
+
+                <!-- Visual Illustration -->
+                <div class="flex justify-center py-4">
+                  <div class="text-center">
+                    <svg class="w-32 h-32 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                      <circle cx="12" cy="12" r="3" stroke-width="1"></circle>
+                    </svg>
+                    <p class="text-sm text-gray-500 mt-2">Point your camera at the QR code</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2: Scan Second QR Code -->
+              <div id="step2Content" class="hidden space-y-6">
+                <div class="p-6 bg-green-50 rounded-lg border-2 border-green-200">
+                  <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                      <svg class="w-12 h-12 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <h3 class="text-xl font-semibold text-green-900 mb-2">First QR Code Scanned!</h3>
+                      <p id="step2Message" class="text-green-800"></p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
+                  <div class="flex items-start space-x-4 mb-4">
+                    <div class="flex-shrink-0">
+                      <svg class="w-12 h-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <h3 class="text-xl font-semibold text-blue-900 mb-2">Scan the Second QR Code</h3>
+                      <p id="step2Instruction" class="text-blue-800"></p>
+                    </div>
+                  </div>
+                  <ol class="list-decimal list-inside space-y-2 text-blue-900 ml-16">
+                    <li>Get the second piece of paper with the other QR code</li>
+                    <li>Open your phone's camera app again</li>
+                    <li>Point it at the second QR code</li>
+                    <li>Tap the notification to complete decryption</li>
+                  </ol>
+                </div>
+
+                <!-- Visual Illustration -->
+                <div class="flex justify-center py-4">
+                  <div class="flex items-center space-x-8">
+                    <div class="text-center">
+                      <div class="w-24 h-24 mx-auto bg-green-100 rounded-lg flex items-center justify-center border-2 border-green-500">
+                        <svg class="w-16 h-16 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                      </div>
+                      <p class="text-sm text-gray-500 mt-2">First code ✓</p>
+                    </div>
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <div class="text-center">
+                      <div class="w-24 h-24 mx-auto bg-blue-100 rounded-lg flex items-center justify-center border-2 border-blue-500 animate-pulse">
+                        <svg class="w-16 h-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                        </svg>
+                      </div>
+                      <p class="text-sm text-gray-500 mt-2">Scan second code</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Instructions -->
-              <div id="instructionsContainer" class="hidden mb-6">
-                <div class="bg-indigo-50 border border-indigo-200 rounded-md p-6">
-                  <h3 class="text-lg font-semibold text-indigo-900 mb-3">Next Step</h3>
-                  <ol class="list-decimal list-inside space-y-2 text-sm text-indigo-800">
-                    <li>Open your phone's camera app</li>
-                    <li>Point it at the second QR code</li>
-                    <li>Tap the notification to open the link</li>
-                    <li>Your secrets will be decrypted automatically</li>
-                  </ol>
+              <!-- Step 3: Decrypting -->
+              <div id="step3Content" class="hidden space-y-6">
+                <div class="flex items-start space-x-4 p-6 bg-purple-50 rounded-lg border-2 border-purple-200">
+                  <div class="flex-shrink-0">
+                    <svg class="w-12 h-12 text-purple-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-purple-900 mb-2">Decrypting Your Secrets...</h3>
+                    <p class="text-purple-800">Please wait while we decrypt your data securely in your browser.</p>
+                  </div>
                 </div>
               </div>
 
-              <!-- Decrypted Secrets Display -->
-              <div id="secretsContainer" class="hidden">
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Your Secrets</h3>
-                <div class="bg-gray-50 border border-gray-300 rounded-lg p-6">
-                  <pre id="secretsDisplay" class="whitespace-pre-wrap break-words font-mono text-sm text-gray-900"></pre>
+              <!-- Step 4: Decrypted Secrets Display -->
+              <div id="secretsContainer" class="hidden space-y-6">
+                <div class="flex items-start space-x-4 p-6 bg-green-50 rounded-lg border-2 border-green-200">
+                  <div class="flex-shrink-0">
+                    <svg class="w-12 h-12 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-green-900 mb-2">Decryption Successful!</h3>
+                    <p class="text-green-800">Your secrets have been decrypted. You can now view and copy them.</p>
+                  </div>
                 </div>
-                <button
-                  id="copyBtn"
-                  class="mt-4 w-full bg-green-600 text-white px-6 py-3 rounded-md font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                  </svg>
-                  Copy to Clipboard
-                </button>
+
+                <div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-4">Your Secrets</h3>
+                  <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-6">
+                    <pre id="secretsDisplay" class="whitespace-pre-wrap break-words font-mono text-sm text-gray-900"></pre>
+                  </div>
+                  <button
+                    id="copyBtn"
+                    class="mt-4 w-full bg-green-600 text-white px-6 py-3 rounded-md font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                    Copy to Clipboard
+                  </button>
+                </div>
+              </div>
+
+              <!-- Error Display -->
+              <div id="errorContainer" class="hidden">
+                <div class="flex items-start space-x-4 p-6 bg-red-50 rounded-lg border-2 border-red-200">
+                  <div class="flex-shrink-0">
+                    <svg class="w-12 h-12 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-red-900 mb-2">Decryption Error</h3>
+                    <p id="errorMessage" class="text-red-800"></p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
