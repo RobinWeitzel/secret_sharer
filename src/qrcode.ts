@@ -27,9 +27,9 @@ export async function generateQRCodes(
 ): Promise<QRCodePair> {
   const decryptURL = getDecryptPageURL();
 
-  // Build URLs with query parameters
-  const dataURL = `${decryptURL}?data=${encodeURIComponent(encryptedData)}`;
-  const keyURL = `${decryptURL}?key=${encodeURIComponent(encryptionKey)}`;
+  // Build URLs with URI fragments
+  const dataURL = `${decryptURL}#data=${encodeURIComponent(encryptedData)}`;
+  const keyURL = `${decryptURL}#key=${encodeURIComponent(encryptionKey)}`;
 
   // Generate QR codes as data URLs
   const dataQR = await QRCode.toDataURL(dataURL, {
@@ -56,9 +56,14 @@ export async function generateQRCodeSet(
 ): Promise<QRCodeSet> {
   const decryptURL = getDecryptPageURL();
 
-  // Build URLs with query parameters
-  const dataURL = `${decryptURL}?data=${encodeURIComponent(encryptedData)}`;
-  const keyURL = `${decryptURL}?key=${encodeURIComponent(encryptionKey)}`;
+  // Build URLs with URI fragments
+  const dataURL = `${decryptURL}#data=${encodeURIComponent(encryptedData)}`;
+  const keyURL = `${decryptURL}#key=${encodeURIComponent(encryptionKey)}`;
+
+    console.log('=== QR Code URLs for Testing ===');
+  console.log('Data QR Code URL:', dataURL);
+  console.log('Key QR Code URL:', keyURL);
+  console.log('================================');
 
   // Generate QR codes with URLs
   const dataQR = await QRCode.toDataURL(dataURL, {

@@ -115,6 +115,27 @@ function updateProgress(step: number, status: 'active' | 'complete'): void {
     text?.classList.remove('text-gray-500');
     text?.classList.add('text-gray-900');
   }
+
+  updateProgressBarColors();
+}
+
+function updateProgressBarColors(): void {
+  const step1Complete = document.getElementById('step1')?.querySelector('div')?.classList.contains('bg-green-600');
+  const step2Complete = document.getElementById('step2')?.querySelector('div')?.classList.contains('bg-green-600');
+  const step3Complete = document.getElementById('step3')?.querySelector('div')?.classList.contains('bg-green-600');
+
+  const progress1Bar = document.getElementById('progress1')?.querySelector('div');
+  const progress2Bar = document.getElementById('progress2')?.querySelector('div');
+
+  if (step1Complete && step2Complete) {
+    progress1Bar?.classList.remove('bg-blue-600');
+    progress1Bar?.classList.add('bg-green-600');
+  }
+
+  if (step2Complete && step3Complete) {
+    progress2Bar?.classList.remove('bg-blue-600');
+    progress2Bar?.classList.add('bg-green-600');
+  }
 }
 
 function updateStepMessage(message: string, instruction: string): void {
@@ -157,17 +178,51 @@ async function decryptAndDisplay(): Promise<void> {
   }
 }
 
-function showError(message: string): void {
+async function showError(message: string): Promise<void> {
   const step3Content = document.getElementById('step3Content');
   const errorContainer = document.getElementById('errorContainer');
   const errorMessage = document.getElementById('errorMessage');
+
+  await clearStorage();
+  state.encryptedData = null;
+  state.encryptionKey = null;
 
   step3Content?.classList.add('hidden');
   errorContainer?.classList.remove('hidden');
 
   if (errorMessage) {
-    errorMessage.textContent = message;
+    errorMessage.textContent = `${message} The stored data has been cleared. Please scan both QR codes again.`;
   }
+
+  const step1Element = document.getElementById('step1');
+  const step2Element = document.getElementById('step2');
+  const step3Element = document.getElementById('step3');
+
+  step1Element?.querySelector('div')?.classList.remove('bg-green-600', 'bg-blue-600');
+  step1Element?.querySelector('div')?.classList.add('bg-gray-300', 'text-gray-600');
+  step1Element?.querySelector('p')?.classList.remove('text-gray-900');
+  step1Element?.querySelector('p')?.classList.add('text-gray-500');
+
+  step2Element?.querySelector('div')?.classList.remove('bg-green-600', 'bg-blue-600');
+  step2Element?.querySelector('div')?.classList.add('bg-gray-300', 'text-gray-600');
+  step2Element?.querySelector('p')?.classList.remove('text-gray-900');
+  step2Element?.querySelector('p')?.classList.add('text-gray-500');
+
+  step3Element?.querySelector('div')?.classList.remove('bg-green-600', 'bg-blue-600');
+  step3Element?.querySelector('div')?.classList.add('bg-gray-300', 'text-gray-600');
+  step3Element?.querySelector('p')?.classList.remove('text-gray-900');
+  step3Element?.querySelector('p')?.classList.add('text-gray-500');
+
+  const progress1Bar = document.getElementById('progress1')?.querySelector('div');
+  const progress2Bar = document.getElementById('progress2')?.querySelector('div');
+
+  progress1Bar?.style.setProperty('width', '0%');
+  progress1Bar?.classList.remove('bg-green-600');
+  progress1Bar?.classList.add('bg-blue-600');
+
+  progress2Bar?.style.setProperty('width', '0%');
+  progress2Bar?.classList.remove('bg-green-600');
+  progress2Bar?.classList.add('bg-blue-600');
 }
 
 async function handleCopy(): Promise<void> {

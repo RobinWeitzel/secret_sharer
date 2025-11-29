@@ -18,18 +18,20 @@ export function getDecryptPageURL(): string {
 }
 
 /**
- * Get a specific query parameter from the URL
+ * Get a specific parameter from the URI fragment
  */
 export function getQueryParam(param: string): string | null {
-  const urlParams = new URLSearchParams(window.location.search);
+  const hash = window.location.hash.substring(1);
+  const urlParams = new URLSearchParams(hash);
   return urlParams.get(param);
 }
 
 /**
- * Get all query parameters from the URL
+ * Get all parameters from the URI fragment
  */
 export function getAllQueryParams(): URLSearchParams {
-  return new URLSearchParams(window.location.search);
+  const hash = window.location.hash.substring(1);
+  return new URLSearchParams(hash);
 }
 
 /**
@@ -43,11 +45,11 @@ export function getQRCodeType(): 'data' | 'key' | null {
 }
 
 /**
- * Build URL with query parameters for QR code
+ * Build URL with URI fragment for QR code
  */
 export function buildQRCodeURL(type: 'data' | 'key', payload: string): string {
   const decryptURL = getDecryptPageURL();
   const params = new URLSearchParams();
   params.set(type, payload);
-  return `${decryptURL}?${params.toString()}`;
+  return `${decryptURL}#${params.toString()}`;
 }
