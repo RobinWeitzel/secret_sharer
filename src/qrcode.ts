@@ -3,6 +3,7 @@
  */
 
 import QRCode from 'qrcode';
+import { getDecryptPageURL } from './utils';
 
 export interface QRCodePair {
   dataQR: string;
@@ -24,11 +25,11 @@ export async function generateQRCodes(
   encryptedData: string,
   encryptionKey: string
 ): Promise<QRCodePair> {
-  const baseURL = 'https://robinweitzel.de/secret_sharer';
+  const decryptURL = getDecryptPageURL();
 
   // Build URLs with query parameters
-  const dataURL = `${baseURL}?data=${encodeURIComponent(encryptedData)}`;
-  const keyURL = `${baseURL}?key=${encodeURIComponent(encryptionKey)}`;
+  const dataURL = `${decryptURL}?data=${encodeURIComponent(encryptedData)}`;
+  const keyURL = `${decryptURL}?key=${encodeURIComponent(encryptionKey)}`;
 
   // Generate QR codes as data URLs
   const dataQR = await QRCode.toDataURL(dataURL, {
@@ -53,11 +54,11 @@ export async function generateQRCodeSet(
   encryptedData: string,
   encryptionKey: string
 ): Promise<QRCodeSet> {
-  const baseURL = 'https://robinweitzel.de/secret_sharer';
+  const decryptURL = getDecryptPageURL();
 
   // Build URLs with query parameters
-  const dataURL = `${baseURL}?data=${encodeURIComponent(encryptedData)}`;
-  const keyURL = `${baseURL}?key=${encodeURIComponent(encryptionKey)}`;
+  const dataURL = `${decryptURL}?data=${encodeURIComponent(encryptedData)}`;
+  const keyURL = `${decryptURL}?key=${encodeURIComponent(encryptionKey)}`;
 
   // Generate QR codes with URLs
   const dataQR = await QRCode.toDataURL(dataURL, {

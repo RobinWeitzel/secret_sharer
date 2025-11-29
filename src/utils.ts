@@ -1,4 +1,23 @@
 /**
+ * Get the current base URL from the browser
+ */
+export function getBaseURL(): string {
+  const { protocol, host, pathname } = window.location;
+  const path = pathname.endsWith('.html')
+    ? pathname.substring(0, pathname.lastIndexOf('/'))
+    : pathname.replace(/\/$/, '');
+  return `${protocol}//${host}${path}`;
+}
+
+/**
+ * Get the URL for the decrypt page
+ */
+export function getDecryptPageURL(): string {
+  const baseURL = getBaseURL();
+  return `${baseURL}/decrypt.html`;
+}
+
+/**
  * Get a specific query parameter from the URL
  */
 export function getQueryParam(param: string): string | null {
@@ -27,8 +46,8 @@ export function getQRCodeType(): 'data' | 'key' | null {
  * Build URL with query parameters for QR code
  */
 export function buildQRCodeURL(type: 'data' | 'key', payload: string): string {
-  const baseURL = 'https://robinweitzel.de/secret_sharer';
+  const decryptURL = getDecryptPageURL();
   const params = new URLSearchParams();
   params.set(type, payload);
-  return `${baseURL}?${params.toString()}`;
+  return `${decryptURL}?${params.toString()}`;
 }
