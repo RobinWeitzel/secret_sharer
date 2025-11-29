@@ -16,26 +16,28 @@ A secure, client-side web application for sharing confidential information using
 
 Imagine you need to leave important passwords or confidential information with family members for emergencies—like bank account access if you're unavailable or incapacitated. Simply printing passwords on paper creates a significant security risk: anyone who finds it could access your accounts.
 
-Secret Sharer solves this problem by splitting your information into two parts:
-- **Part 1**: The encrypted data (QR code)
-- **Part 2**: The decryption key (QR code)
+Secret Sharer solves this problem by splitting your information into **three** parts:
+- **Part 1**: The encrypted data (QR code on first page)
+- **Part 2**: The base encryption key (QR code on second page)
+- **Part 3**: A security code (printed on both pages)
 
-Store these in two different physical locations (e.g., one at home, one with family). Without both parts, the information is completely unusable and secure.
+Store the two pages in different physical locations (e.g., one at home, one with family). To decrypt the information, you need **both QR codes AND the security code**. Without all three parts, the information is completely unusable and secure.
 
 ## How It Works
 
 ### High-Level Process
 
 1. **Encryption**: Enter your confidential information on the website
-2. **Generation**: The app encrypts and compresses the data, then generates two QR codes
-3. **Printing**: Print both QR codes on separate pages with clear instructions
+2. **Generation**: The app generates a security code, encrypts and compresses the data, then creates two QR codes
+3. **Printing**: Print both QR codes on separate pages with the security code and clear instructions
 4. **Storage**: Store each page in a different physical location
-5. **Recovery**: When needed, scan both QR codes to decrypt and view the information
+5. **Recovery**: When needed, scan both QR codes and enter the security code to decrypt and view the information
 
 ### Technical Implementation
 
 - **Client-side only**: All encryption/decryption happens in your browser—no data is ever sent to a server
-- **Split architecture**: One QR code contains the encrypted data, the other contains the encryption key
+- **Split architecture**: One QR code contains the encrypted data, the other contains a base encryption key
+- **Security code**: An 8-character code (with uppercase, lowercase, numbers, and symbols) is combined with the base key to derive the final encryption key
 - **Service Worker**: Temporarily stores scanned data during the two-step scanning process
 - **Automatic cleanup**: All stored data is cleared after successful decryption or errors
 
@@ -44,17 +46,22 @@ The website is completely static with no backend, making it transparent and trus
 ## Security Features
 
 - **AES-256-GCM encryption**: Industry-standard symmetric encryption
+- **Three-layer security**: Requires both QR codes AND the security code
+- **Key derivation**: The security code is cryptographically combined with the base key using SHA-256
 - **Client-side processing**: Your data never leaves your device
 - **Compression**: Data is compressed before encryption to minimize QR code size
-- **Two-factor security**: Both QR codes are required; one alone reveals nothing
+- **Split storage**: Each QR code alone reveals nothing without the other parts
 - **Automatic cleanup**: Temporary data is cleared after use
 
 ### Technical Details
 
-- Encryption: AES-256-GCM with random IV (first 12 bytes)
-- Compression: gzip compression before encryption
-- Encoding: Base64 encoding for QR code compatibility
-- QR Codes: One contains encrypted data, the other contains the encryption key
+- **Encryption**: AES-256-GCM with random IV (first 12 bytes)
+- **Key Derivation**: SHA-256(base_key + security_code) to derive the final encryption key
+- **Security Code**: 8 random characters (uppercase, lowercase, numbers, special characters)
+- **Compression**: gzip compression before encryption
+- **Encoding**: Base64 encoding for QR code compatibility
+- **QR Codes**: One contains encrypted data, the other contains the base encryption key
+- **Printed Code**: The security code is printed on both pages (not in QR codes)
 
 ## Technologies Used
 
@@ -77,20 +84,24 @@ The website is completely static with no backend, making it transparent and trus
 
 ### Encryption Page
 - User-friendly interface for entering confidential information
+- Automatic security code generation
 - Real-time QR code generation
-- Downloadable PDF with both QR codes and instructions
+- Prominent display of the security code
+- Downloadable PDF with both QR codes, security code, and instructions
 - Print-optimized layouts
 
 ### Decryption Page
-- Step-by-step visual progress indicator
+- Step-by-step visual progress indicator (3 steps)
 - Mobile-friendly QR code scanning
+- Security code input with validation
 - Clear instructions for non-technical users
 - Error handling with automatic state reset
 - Copy-to-clipboard functionality
 
 ### Generated PDFs
 - Two-page document with clear separation
-- User instructions on each page
+- Security code prominently displayed on both pages
+- User instructions on each page (including security code entry)
 - Space to note the location of the other document
 - Professional, easy-to-follow layout
 - Neutral language (doesn't assume scanner created the document)

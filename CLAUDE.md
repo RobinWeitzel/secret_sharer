@@ -6,7 +6,8 @@ This website splits the secrets into two parts (to be printed on two pieces of p
 ### High level implementation 
 To do that securely the idea is that one paper contains the encrypted passwords while another contains the decrpytion key.
 Each paper contains a QR code as well as instructions.
-The user scans on QR code which leads them to a website, the website asks the user to scan the second code and once both codes are scanned the site shows the decrypted secrets.
+The user scans on QR code which leads them to a website, the website asks the user to scan the second code.
+After scanning both codes the user is asked to enter a security code (that is printed on both pages but as text, not a QR code). The security code is then appended to the key and that combined key is used to decrypt the data. 
 
 The website itself is purely client-side and has no backend, all the relevant data is stored in the QR codes.
 Each QR code contains the URL and the data as a URL fragment (either decryption key or data). The website detect which one was provided by the first QR code and then requests the second one.
@@ -23,6 +24,8 @@ It will be hosted on GitHub pages.
 For developing it should be possible to run a local dev server.
 
 For the encryption a symmetric state-of-the-art encryption method should be used.
+
+The security code should be an 8 character string made up of numbers and upper and lower case characters as well as special characters. It must contain all of those. Use a password generation library for this, don't write your own logic.
 
 Consideration should also be given about the max payload size of URL fragment.
 A possible solution could be to first compress the secrets before encrypting them (and then decompress them again after decryption).

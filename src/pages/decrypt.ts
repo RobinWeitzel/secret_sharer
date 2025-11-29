@@ -52,7 +52,7 @@ function updateUI(): void {
 
   if (hasData && hasKey) {
     showStep(3);
-    decryptAndDisplay();
+    setupDecryptButton();
   } else if (hasData) {
     showStep(2);
     updateStepMessage('First part received. Now scan the QR code from the other document.', 'Scan the QR code from the other part of the document to access the information.');
@@ -64,16 +64,44 @@ function updateUI(): void {
   }
 }
 
+function setupDecryptButton(): void {
+  const decryptBtn = document.getElementById('decryptBtn');
+  const securityCodeInput = document.getElementById('securityCodeInput') as HTMLInputElement;
+
+  if (decryptBtn && securityCodeInput) {
+    decryptBtn.addEventListener('click', () => handleDecryptClick(securityCodeInput));
+    securityCodeInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleDecryptClick(securityCodeInput);
+      }
+    });
+  }
+}
+
+async function handleDecryptClick(securityCodeInput: HTMLInputElement): Promise<void> {
+  const securityCode = securityCodeInput.value.trim();
+
+  if (securityCode.length !== 8) {
+    alert('Please enter the 8-character security code');
+    return;
+  }
+
+  showStep(4);
+  await decryptAndDisplay(securityCode);
+}
+
 function showStep(step: number): void {
   const step1Content = document.getElementById('step1Content');
   const step2Content = document.getElementById('step2Content');
   const step3Content = document.getElementById('step3Content');
+  const step4Content = document.getElementById('step4Content');
   const secretsContainer = document.getElementById('secretsContainer');
   const errorContainer = document.getElementById('errorContainer');
 
   step1Content?.classList.add('hidden');
   step2Content?.classList.add('hidden');
   step3Content?.classList.add('hidden');
+  step4Content?.classList.add('hidden');
   secretsContainer?.classList.add('hidden');
   errorContainer?.classList.add('hidden');
 
@@ -86,6 +114,11 @@ function showStep(step: number): void {
     updateProgress(2, 'active');
   } else if (step === 3) {
     step3Content?.classList.remove('hidden');
+    updateProgress(1, 'complete');
+    updateProgress(2, 'complete');
+    updateProgress(3, 'active');
+  } else if (step === 4) {
+    step4Content?.classList.remove('hidden');
     updateProgress(1, 'complete');
     updateProgress(2, 'complete');
     updateProgress(3, 'active');
@@ -146,17 +179,17 @@ function updateStepMessage(message: string, instruction: string): void {
   if (step2Instruction) step2Instruction.textContent = instruction;
 }
 
-async function decryptAndDisplay(): Promise<void> {
+async function decryptAndDisplay(securityCode: string): Promise<void> {
   if (!state.encryptedData || !state.encryptionKey) return;
 
-  const step3Content = document.getElementById('step3Content');
+  const step4Content = document.getElementById('step4Content');
   const secretsContainer = document.getElementById('secretsContainer');
   const secretsDisplay = document.getElementById('secretsDisplay');
   const copyBtn = document.getElementById('copyBtn');
 
   try {
     const key = await importKey(state.encryptionKey);
-    const decrypted = await decrypt(state.encryptedData, key);
+    const decrypted = await decrypt(state.encryptedData, key, securityCode);
     const decompressed = await decompress(decrypted);
 
     if (secretsDisplay) {
@@ -165,7 +198,7 @@ async function decryptAndDisplay(): Promise<void> {
 
     await clearStorage();
 
-    step3Content?.classList.add('hidden');
+    step4Content?.classList.add('hidden');
     updateProgress(3, 'complete');
     secretsContainer?.classList.remove('hidden');
 
@@ -174,12 +207,13 @@ async function decryptAndDisplay(): Promise<void> {
     }
   } catch (error) {
     console.error('Decryption error:', error);
-    showError('Error decrypting the information. Please ensure both QR codes are from the same document set.');
+    showError('Error decrypting the information. Please ensure both QR codes are from the same document set and that you entered the correct security code.');
   }
 }
 
 async function showError(message: string): Promise<void> {
   const step3Content = document.getElementById('step3Content');
+  const step4Content = document.getElementById('step4Content');
   const errorContainer = document.getElementById('errorContainer');
   const errorMessage = document.getElementById('errorMessage');
 
@@ -188,6 +222,7 @@ async function showError(message: string): Promise<void> {
   state.encryptionKey = null;
 
   step3Content?.classList.add('hidden');
+  step4Content?.classList.add('hidden');
   errorContainer?.classList.remove('hidden');
 
   if (errorMessage) {

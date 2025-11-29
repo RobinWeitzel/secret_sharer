@@ -14,23 +14,23 @@ export interface QRCodeData {
 /**
  * Generate a 2-page PDF with QR codes and instructions
  */
-export function generatePDF(qrCodes: QRCodeData): void {
+export function generatePDF(qrCodes: QRCodeData, securityCode: string): void {
   const pdf = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
     format: 'a4',
   });
 
-  generatePage(pdf, qrCodes.dataQR, 1);
+  generatePage(pdf, qrCodes.dataQR, 1, securityCode);
 
   pdf.addPage();
 
-  generatePage(pdf, qrCodes.keyQR, 2);
+  generatePage(pdf, qrCodes.keyQR, 2, securityCode);
 
   pdf.save('secret-recovery-qr-codes.pdf');
 }
 
-function generatePage(pdf: jsPDF, qrCode: string, pageNum: number): void {
+function generatePage(pdf: jsPDF, qrCode: string, pageNum: number, securityCode: string): void {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const margin = 20;
   const centerX = pageWidth / 2;
@@ -61,10 +61,29 @@ function generatePage(pdf: jsPDF, qrCode: string, pageNum: number): void {
   pdf.text(whatIsThisText, margin, yPos);
   yPos += whatIsThisText.length * 4.5 + 8;
 
-  const qrSize = 100;
+  const qrSize = 80;
   const qrX = centerX - qrSize / 2;
   pdf.addImage(qrCode, 'PNG', qrX, yPos, qrSize, qrSize);
-  yPos += qrSize + 12;
+  yPos += qrSize + 10;
+
+  pdf.setFillColor(255, 250, 205);
+  pdf.setDrawColor(200, 180, 100);
+  pdf.setLineWidth(1);
+  const boxWidth = pageWidth - 2 * margin;
+  const boxHeight = 20;
+  pdf.roundedRect(margin, yPos, boxWidth, boxHeight, 3, 3, 'FD');
+
+  yPos += 6;
+  pdf.setFontSize(11);
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('SECURITY CODE:', centerX, yPos, { align: 'center' });
+
+  yPos += 7;
+  pdf.setFontSize(16);
+  pdf.setFont('courier', 'bold');
+  pdf.text(securityCode, centerX, yPos, { align: 'center' });
+
+  yPos += 18;
 
   pdf.setFontSize(10);
   pdf.setFont('helvetica', 'bold');
@@ -79,7 +98,8 @@ function generatePage(pdf: jsPDF, qrCode: string, pageNum: number): void {
     '2. Tap the notification to open the website',
     '3. The website will ask you to scan the second QR code',
     '4. Get the other part of this document and scan its QR code',
-    '5. The information will be displayed on the screen'
+    '5. Enter the security code shown above when prompted',
+    '6. The information will be displayed on the screen'
   ];
 
   instructions.forEach(line => {
@@ -90,13 +110,13 @@ function generatePage(pdf: jsPDF, qrCode: string, pageNum: number): void {
   yPos += 6;
   pdf.setFontSize(10);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Important: Both parts are required!', margin, yPos);
+  pdf.text('Important: Both parts and the security code are required!', margin, yPos);
 
   yPos += 6;
   pdf.setFontSize(9);
   pdf.setFont('helvetica', 'normal');
   const importantText = pdf.splitTextToSize(
-    'This part and the other part must be kept in different locations. Both parts are required to access the information.',
+    'This part and the other part must be kept in different locations. Both parts and the security code (printed above) are required to access the information.',
     pageWidth - 2 * margin
   );
   pdf.text(importantText, margin, yPos);
@@ -117,7 +137,8 @@ function generatePage(pdf: jsPDF, qrCode: string, pageNum: number): void {
   pdf.setTextColor(100, 100, 100);
   const technicalNote = pdf.splitTextToSize(
     'Technical details: Data encrypted with AES-256-GCM (IV: first 12 bytes), compressed with gzip, encoded in base64. ' +
-    'One QR contains the encrypted data, the other contains the encryption key.',
+    'One QR contains the encrypted data, the other contains the base encryption key. The security code is combined with ' +
+    'the base key to derive the final encryption key.',
     pageWidth - 2 * margin
   );
   pdf.text(technicalNote, margin, yPos);
