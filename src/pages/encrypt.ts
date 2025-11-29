@@ -1,4 +1,3 @@
-import '../style.css';
 import { compress } from '../compression';
 import { generateKey, exportKey, encrypt } from '../crypto';
 import { generateQRCodeSet, renderQRCode } from '../qrcode';
