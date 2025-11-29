@@ -60,6 +60,11 @@ export async function generateQRCodeSet(
   const dataURL = `${decryptURL}?data=${encodeURIComponent(encryptedData)}`;
   const keyURL = `${decryptURL}?key=${encodeURIComponent(encryptionKey)}`;
 
+  console.log('=== QR Code URLs for Testing ===');
+  console.log('Data QR Code URL:', dataURL);
+  console.log('Key QR Code URL:', keyURL);
+  console.log('================================');
+
   // Generate QR codes with URLs
   const dataQR = await QRCode.toDataURL(dataURL, {
     errorCorrectionLevel: 'M',
