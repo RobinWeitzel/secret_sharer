@@ -5,7 +5,9 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
   }
 
   try {
-    const registration = await navigator.serviceWorker.register('/sw.js');
+    const baseUrl = import.meta.env.BASE_URL || '/';
+    const swPath = `${baseUrl}sw.js`;
+    const registration = await navigator.serviceWorker.register(swPath);
     await navigator.serviceWorker.ready;
     return registration;
   } catch (error) {
