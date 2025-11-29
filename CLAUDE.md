@@ -9,7 +9,7 @@ Each paper contains a QR code as well as instructions.
 The user scans on QR code which leads them to a website, the website asks the user to scan the second code and once both codes are scanned the site shows the decrypted secrets.
 
 The website itself is purely client-side and has no backend, all the relevant data is stored in the QR codes.
-Each QR code contains the URL and the data as a query param (either decryption key or data). The website detect which one was provided by the first QR code and then requests the second one.
+Each QR code contains the URL and the data as a URL fragment (either decryption key or data). The website detect which one was provided by the first QR code and then requests the second one.
 
 The site should have two functions:
 - decrypting secrets (this is reached by scanning the first QR code or you can also click there and be prompted to scan the first code)
@@ -24,7 +24,7 @@ For developing it should be possible to run a local dev server.
 
 For the encryption a symmetric state-of-the-art encryption method should be used.
 
-Consideration should also be given about the max payload size of query parameters.
+Consideration should also be given about the max payload size of URL fragment.
 A possible solution could be to first compress the secrets before encrypting them (and then decompress them again after decryption).
 
 For coding follow modern best practices:

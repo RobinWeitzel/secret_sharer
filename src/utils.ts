@@ -20,7 +20,7 @@ export function getDecryptPageURL(): string {
 /**
  * Get a specific parameter from the URI fragment
  */
-export function getQueryParam(param: string): string | null {
+export function getFragmentParam(param: string): string | null {
   const hash = window.location.hash.substring(1);
   const urlParams = new URLSearchParams(hash);
   return urlParams.get(param);
@@ -29,7 +29,7 @@ export function getQueryParam(param: string): string | null {
 /**
  * Get all parameters from the URI fragment
  */
-export function getAllQueryParams(): URLSearchParams {
+export function getAllFragmentParams(): URLSearchParams {
   const hash = window.location.hash.substring(1);
   return new URLSearchParams(hash);
 }
@@ -38,7 +38,7 @@ export function getAllQueryParams(): URLSearchParams {
  * Check if URL contains encrypted data or decryption key
  */
 export function getQRCodeType(): 'data' | 'key' | null {
-  const params = getAllQueryParams();
+  const params = getAllFragmentParams();
   if (params.has('data')) return 'data';
   if (params.has('key')) return 'key';
   return null;

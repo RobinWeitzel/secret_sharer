@@ -1,6 +1,6 @@
 import { importKey, decrypt } from '../crypto';
 import { decompress } from '../compression';
-import { getQueryParam } from '../utils';
+import { getFragmentParam } from '../utils';
 import { registerServiceWorker, storeData, storeKey, getAll, clearStorage } from '../serviceWorker';
 
 interface DecryptState {
@@ -22,8 +22,8 @@ async function initDecryptPage(): Promise<void> {
 }
 
 async function loadDataFromUrlAndServiceWorker(): Promise<void> {
-  const urlData = getQueryParam('data');
-  const urlKey = getQueryParam('key');
+  const urlData = getFragmentParam('data');
+  const urlKey = getFragmentParam('key');
 
   if (urlData) {
     state.encryptedData = urlData;
