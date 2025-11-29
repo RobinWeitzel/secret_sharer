@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Decrypt Secrets - Secret Sharer</title>
+    <title>Secret Sharer - Secure Two-Location Secret Storage</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
@@ -19,7 +19,7 @@
                 <h1 class="text-2xl font-bold text-gray-900">Secret Sharer</h1>
               </div>
               <nav class="flex space-x-4">
-                <a href="./decrypt.html" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                <a href="./decrypt.html" class="text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors">
                   Decrypt
                 </a>
                 <a href="./encrypt.html" class="text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors">
@@ -31,13 +31,95 @@
         </header>
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div class="max-w-3xl mx-auto">
-            <div class="bg-white rounded-lg shadow-md p-8">
-              <h2 class="text-3xl font-bold text-gray-900 mb-4">Decrypt Your Secrets</h2>
-              <p class="text-gray-600 mb-8">
-                Scan both QR codes to reveal your secrets.
+          <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+              <h2 class="text-4xl font-bold text-gray-900 mb-6">Secure Secret Storage Across Two Locations</h2>
+              <p class="text-lg text-gray-700 mb-6">
+                Secret Sharer helps you securely store sensitive information like passwords, recovery codes, or important documents by splitting them across two physical locations.
               </p>
-              <!-- Decrypt page content will be added when implementing decrypt functionality -->
+              <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                <p class="text-gray-700">
+                  <strong>Use Case:</strong> Leave passwords to your accounts with family members in case you're unavailable or incapacitated. Without both parts, the information remains secure.
+                </p>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">How It Works</h3>
+              <div class="space-y-4">
+                <div class="flex items-start space-x-4">
+                  <div class="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                  <div>
+                    <h4 class="font-semibold text-gray-900 mb-1">Encrypt Your Secrets</h4>
+                    <p class="text-gray-600">Enter your sensitive information and generate two QR codes: one contains encrypted data, the other contains the decryption key.</p>
+                  </div>
+                </div>
+                <div class="flex items-start space-x-4">
+                  <div class="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                  <div>
+                    <h4 class="font-semibold text-gray-900 mb-1">Print and Store</h4>
+                    <p class="text-gray-600">Print both QR codes on separate pages with instructions. Store one at your location and another at a trusted location.</p>
+                  </div>
+                </div>
+                <div class="flex items-start space-x-4">
+                  <div class="flex-shrink-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-bold">3</div>
+                  <div>
+                    <h4 class="font-semibold text-gray-900 mb-1">Decrypt When Needed</h4>
+                    <p class="text-gray-600">Scan one QR code, then the other. The secrets are decrypted entirely in your browser with no data sent to any server.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">Security Features</h3>
+              <ul class="space-y-2 text-gray-700">
+                <li class="flex items-center space-x-2">
+                  <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span>State-of-the-art symmetric encryption</span>
+                </li>
+                <li class="flex items-center space-x-2">
+                  <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span>100% client-side processing - no backend, no data transmission</span>
+                </li>
+                <li class="flex items-center space-x-2">
+                  <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span>Split-key protection - both QR codes required to decrypt</span>
+                </li>
+                <li class="flex items-center space-x-2">
+                  <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                  </svg>
+                  <span>Open source and transparent</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+              <a href="./encrypt.html" class="block bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-2xl font-bold">Encrypt Secrets</h3>
+                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                </div>
+                <p class="text-indigo-100">Create your encrypted QR codes and print them for secure storage.</p>
+              </a>
+              <a href="./decrypt.html" class="block bg-gradient-to-br from-blue-500 to-cyan-600 text-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-2xl font-bold">Decrypt Secrets</h3>
+                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
+                  </svg>
+                </div>
+                <p class="text-blue-100">Scan both QR codes to reveal your secrets.</p>
+              </a>
             </div>
           </div>
         </main>
@@ -47,6 +129,5 @@
         </footer>
       </div>
     </div>
-    <script type="module" src="/src/pages/decrypt.ts"></script>
   </body>
 </html>
